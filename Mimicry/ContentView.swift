@@ -8,19 +8,60 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Namespace private var namespace
+    @State private var isZoomed = false
+    
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+            if !isZoomed {
+                Button(action: {
+                    withAnimation(.smooth) {
+                        isZoomed.toggle()
+                    }
+                }) {
+                    Text("Open")
+                        .foregroundColor(.white)
+                        .padding()
+                        .font(.title3)
+                        .matchedGeometryEffect(id: "button", in: namespace)
+                        .background(
+                            Rectangle()
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                .matchedGeometryEffect(id: "shape", in: namespace)
+                                .foregroundStyle(.blue)
+                        )
+                }
+                .offset(x: 120, y: 350)
+            } else {
+                ZStack(alignment: .topLeading) {
+                    Rectangle()
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .matchedGeometryEffect(id: "shape", in: namespace)
+                        .frame(width: 300, height: 300)
+                        .foregroundStyle(.blue)
+                    Button(action: {
+                        withAnimation(.smooth) {
+                            isZoomed.toggle()
+                        }
+                    }, label: {
+                        Label("Back", systemImage: "arrowshape.backward.fill")
+                            .foregroundStyle(.white)
+                            .font(.title3)
+                            .padding()
+                            .fixedSize(horizontal: true, vertical: true)
+                            .matchedGeometryEffect(id: "button", in: namespace)
+                    })
+                }
+            }
         }
-        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
+extension Animation {
+    static var smooth: Animation {
+        .interpolatingSpring(stiffness: 200, damping: 20)
+    }
+    static var bouncy: Animation {
+        .interpolatingSpring(stiffness: 100, damping: 5)
     }
 }
